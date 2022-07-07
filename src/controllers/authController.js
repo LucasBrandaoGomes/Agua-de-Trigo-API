@@ -1,7 +1,11 @@
 import bcrypt from 'bcrypt';
 import Joi from "joi";
 import db from '../db.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
+dotenv.config();
+const secretKey = process.env.JWT_SECRET
 
 export async function SignUp(req, res){    
     
@@ -79,15 +83,13 @@ export async function SignIn(req, res){
     try{
       const registeredUser = await db.collection("users").findOne({email : userSignIn.email})
       const passwordVerification = bcrypt.compareSync(userSignIn.password, registeredUser.password)
-  
       if (registeredUser && passwordVerification){
-  
         await db.collection("sessions").insertOne(
           {
           email:registeredUser.email,
-          token
         })
-  
+        const session = db.collection("sessions").findOne({email: registeredUser.email})
+        const token = jwt.sign({userId: session._id}, secretKey)
         res.status(200).send({
           name:registeredUser.name,
           token: token
