@@ -1,9 +1,7 @@
 import bcrypt from 'bcrypt';
-import { v4 as uuid } from 'uuid';
 import Joi from "joi";
 import db from '../db.js';
 
-const token = uuid();
 
 export async function SignUp(req, res){    
     
@@ -11,8 +9,13 @@ export async function SignUp(req, res){
   
     const userSchema = Joi.object(
         {
-          name: Joi.string().min(1),
+          name: Joi.string(),
           email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+          street: Joi.string(),
+          number: Joi.string(),
+          neighborhood: Joi.string(),
+          city: Joi.string(),
+          state: Joi.string(),
           password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
           passwordConfirmation: Joi.any().valid(Joi.ref('password'))
         });
@@ -37,10 +40,15 @@ export async function SignUp(req, res){
       }
   
       await db.collection("users").insertOne(
-        {
+        {   
             name: req.body.name.trim(),
             email: req.body.email.trim(),
-            password: passwordEncrypted
+            password: passwordEncrypted,
+            street: req.body.street,
+            number: req.body.number,
+            neighborhood: req.body.neighborhood,
+            city: req.body.city,
+            state: req.body.state,
         });
       
       res.sendStatus(201);
@@ -73,7 +81,6 @@ export async function SignIn(req, res){
       const passwordVerification = bcrypt.compareSync(userSignIn.password, registeredUser.password)
   
       if (registeredUser && passwordVerification){
-        const token = uuid();
   
         await db.collection("sessions").insertOne(
           {
