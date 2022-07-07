@@ -1,4 +1,4 @@
-import { db } from '../dj.js'
+import { db } from '../db.js'
 
 export default async function tokenValidateMiddleware(req, res, next) {
 
