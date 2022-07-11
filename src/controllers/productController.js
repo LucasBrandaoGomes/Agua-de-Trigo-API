@@ -17,7 +17,6 @@ export async function postOrder(req, res){
         const day = dayjs().locale('pt-br')
         
         try{
-
         const user = await db.collection("users").findOne({email : session.email})
         await db.collection('orders').insertOne(
           {
