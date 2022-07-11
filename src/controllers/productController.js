@@ -3,9 +3,14 @@ import dayjs from 'dayjs';
 
 export async function getProducts(req, res){    
 
+  try{
     const products = await db.collection("products").find({}).toArray()
     
-    res.send(products);    
+    res.send(products)
+    
+  }catch (error){
+    res.sendStatus(error)
+  }    
 
 }
 
