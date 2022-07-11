@@ -88,7 +88,8 @@ export async function SignIn(req, res){
           {
           email:registeredUser.email,
         })
-        const session = db.collection("sessions").findOne({email: registeredUser.email})
+       
+        const session = await db.collection("sessions").findOne({email: registeredUser.email});
         const token = jwt.sign({userId: session._id}, secretKey)
         res.status(200).send({
           name:registeredUser.name,
